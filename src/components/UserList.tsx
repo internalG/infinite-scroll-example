@@ -4,22 +4,29 @@ import UserCard from './UserCard'
 import { useEffect, useState } from 'react'
 import { getUsers } from '@/actions/getUsers'
 import { useInView } from 'react-intersection-observer'
+import { USERS_PER_PAGE } from '@/constants/pagination'
 
 type UserListProps = {
   initialUsers: User[]
 }
 
-const NUMBER_OF_USERS_TO_FETCH = 10
-
 export default function UserList({ initialUsers }: UserListProps) {
-  const [offset, setOffset] = useState(NUMBER_OF_USERS_TO_FETCH)
+  const [offset, setOffset] = useState(USERS_PER_PAGE)
   const [users, setUsers] = useState<User[]>(initialUsers)
   const { ref, inView } = useInView()
+  const [isLoading, setIsLoading] = useState(false)
 
   const loadMoreUsers = async () => {
-    const apiUsers = await getUsers(offset, NUMBER_OF_USERS_TO_FETCH)
-    setUsers(users => [...users, ...apiUsers])
-    setOffset(offset => offset + NUMBER_OF_USERS_TO_FETCH)
+    try {
+      setIsLoading(true)
+      const apiUsers = await getUsers(offset, USERS_PER_PAGE)
+      setUsers(users => [...users, ...apiUsers])
+      setOffset(offset => offset + USERS_PER_PAGE)
+    } catch (error) {
+      console.error('Error loading users:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -34,7 +41,7 @@ export default function UserList({ initialUsers }: UserListProps) {
         <UserCard key={user.id} user={user} />
       ))}
       <div ref={ref}>
-        Loading...
+        {isLoading && <div className="text-center py-4">Loading more users...</div>}
       </div>
       {/* <button onClick={loadMoreUsers}>Load more</button> */}
     </div>
