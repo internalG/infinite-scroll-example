@@ -16,6 +16,19 @@ export default function UserCard({ user, onRatingChange }: UserProps) {
     onRatingChange?.(user.id, rating);
   };
 
+  const getRatingColor = (rating: 'like' | 'ok' | 'disappointed') => {
+    switch (rating) {
+      case 'like':
+        return 'text-[#4caf50]';
+      case 'ok':
+        return 'text-[#2196f3]';
+      case 'disappointed':
+        return 'text-[#f44336]';
+      default:
+        return 'text-indigo-100';
+    }
+  };
+
   return (
     <div className='bg-indigo-400 text-white rounded-lg shadow-md w-full max-w-2xl p-4 hover:bg-indigo-500 transition-colors'>
       <div className="flex flex-col gap-4">
@@ -35,11 +48,13 @@ export default function UserCard({ user, onRatingChange }: UserProps) {
           </div>
         </div>
         
-        <div className="mt-2">
-          <Rating onRate={handleRate} />
+        <div className="mt-2 bg-white/5 backdrop-blur-sm rounded-2xl p-4 flex flex-col items-center">
+          <Rating onRate={handleRate} currentRating={currentRating} />
           {currentRating && (
-            <p className="text-sm text-center mt-2 text-indigo-100">
-              You rated this user: {currentRating}
+            <p className="text-sm mt-3 text-white/70">
+              Your rating: <span className={`font-medium capitalize ${getRatingColor(currentRating)}`}>
+                {currentRating}
+              </span>
             </p>
           )}
         </div>
