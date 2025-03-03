@@ -16,6 +16,14 @@ export default function UserList({ initialUsers }: UserListProps) {
   const { ref, inView } = useInView()
   const [isLoading, setIsLoading] = useState(false)
 
+  const handleRatingChange = (userId: number, rating: 'like' | 'ok' | 'disappointed') => {
+    setUsers(prevUsers =>
+      prevUsers.map(user =>
+        user.id === userId ? { ...user, rating } : user
+      )
+    );
+  };
+
   const loadMoreUsers = async () => {
     try {
       setIsLoading(true)
@@ -33,12 +41,16 @@ export default function UserList({ initialUsers }: UserListProps) {
     if (inView) {
       loadMoreUsers()
     }
-  }, [inView, loadMoreUsers])
+  }, [inView])
 
   return (
     <div className='flex flex-col gap-3'>
       {users.map((user) => (
-        <UserCard key={user.id} user={user} />
+        <UserCard 
+          key={user.id} 
+          user={user} 
+          onRatingChange={handleRatingChange}
+        />
       ))}
       <div ref={ref}>
         {isLoading && <div className="text-center py-4">Loading more users...</div>}

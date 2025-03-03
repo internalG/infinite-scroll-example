@@ -15,6 +15,7 @@ declare interface User {
   state: string
   country: string
   longitude: number
+  rating?: 'like' | 'ok' | 'disappointed'
 }
 
 declare interface UserAPIResponse {
